@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.qna.model.dao.QnADao">
+
+	<insert id="writeArticle" parameterType="QnA">
+		insert into question (userid, subject, content, hit, regtime)
+		values (#{userid}, #{subject}, #{content}, 0, now())
+	</insert>
+	
+	<select id="listArticle" parameterType="map" resultType="QnA">
+		select articleno, userid, subject, content, hit,
+				case when date_format(regtime, '%Y%m%d') = date_format(now(), '%Y%m%d')
+				then date_format(regtime, '%H:%i:%s')
+				else date_format(regtime, '%y.%m.%d')
+				end regtime
+		from question
+		<if test="word != null and word != ''">
+			<if test="key == 'subject'">
+				where subject like concat('%', #{word}, '%')
+			</if>
+			<if test="key != 'subject'">
+				where ${key} = #{word}
+			</if>
+		</if>
+		order by articleno desc
+		limit #{start}, #{spp}
+	</select>
+	
+	<select id="getTotalCount" parameterType="map" resultType="int">
+		select count(articleno)
+		from question
+		<if test="word != null and word != ''">
+			<if test="key == 'subject'">
+				where subject like concat('%', #{word}, '%')
+			</if>
+			<if test="key != 'subject'">
+				where ${key} = #{word}
+			</if>
+		</if>
+	</select>
+	
+	<select id="getArticle" parameterType="int" resultType="QnA">
+		select articleno, userid, subject, content, hit, regtime
+		from question
+		where articleno = #{articleno}
+	</select>
+	
+	<update id="updateHit" parameterType="int">
+		update question
+		set hit = hit + 1
+		where articleno = #{articleno}
+	</update>
+	
+	<update id="modifyArticle" parameterType="QnA">
+		update question
+		set subject = #{subject}, content = #{content}
+		where articleno = #{articleno}
+	</update>
+	
+	<delete id="deleteArticle" parameterType="int">
+		delete from question
+		where articleno = #{articleno}
+	</delete>
+
+</mapper>
+

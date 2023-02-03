@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.user.model.dao.UserDao">
+
+	<insert id="insert" parameterType="User">
+		INSERT INTO users (id,pwd,name,address,tel,question,answer)
+		VALUES(#{id}, #{pwd}, #{name}, #{address}, #{tel}, #{question}, #{answer})
+	</insert>
+	
+	<select id="select" parameterType="string" resultType="User">
+		select * from users where id=#{id}			
+	</select>
+	
+	<update id="update" parameterType="User">
+		update users set pwd=#{pwd}, name=#{name}, address=#{address}, tel=#{tel}, question=#{question}, answer=#{answer} where id=#{id}
+	</update>
+	
+	<delete id="delete" parameterType="String">
+		delete from users where id=#{id}
+	</delete>
+	
+	<select id="login" parameterType="User" resultType="User">
+		select *
+		from users
+		where id = #{id} and pwd = #{pwd}
+	</select>
+	
+	<select id="getRefreshToken" parameterType="string" resultType="string">
+		select token
+		from users
+		where id = #{id}
+	</select>
+	
+	<update id="saveRefreshToken" parameterType="map">
+		update users
+		set token = #{token}
+		where id = #{id}
+	</update>
+	
+	<update id="deleteRefreshToken" parameterType="map">
+		update users
+		set token = #{token, jdbcType=VARCHAR}
+		where id = #{id}
+	</update>
+	
+</mapper>
